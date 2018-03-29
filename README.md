@@ -1,3 +1,5 @@
+*I forked this repository, because I would like to do the exercises from the book.*
+
 # The Go Programming Language
 
 This repository provides the downloadable example programs
