@@ -21,6 +21,9 @@ type IntSet struct {
 
 // Has reports whether the set contains the non-negative value x.
 func (s *IntSet) Has(x int) bool {
+	if s == nil {
+		return false
+	}
 	word, bit := x/64, uint(x%64)
 	return word < len(s.words) && s.words[word]&(1<<bit) != 0
 }
@@ -71,3 +74,40 @@ func (s *IntSet) String() string {
 }
 
 //!-string
+
+//exercise 6.1
+func (i *IntSet) Len() int {
+	if i == nil {
+		return 0
+	}
+	counter := 0
+	for w := range i.words {
+		word := i.words[w]
+		for i := 0; i < 64; i++ {
+			counter += int((word >> uint(i)) % 2)
+		}
+	}
+	return counter
+}
+
+func (i *IntSet) Remove(x int) {
+	if !i.Has(x) {
+		return
+	}
+	word, bit := x/64, uint64(x%64)
+	i.words[word] ^= (1 << bit)
+}
+
+func (i *IntSet) Clear() {
+	if i == nil {
+		return
+	}
+	i.words = []uint64{}
+}
+
+func (i *IntSet) Copy() *IntSet {
+	copySet := new(IntSet)
+	copySet.words = make([]uint64, len(i.words))
+	copy(copySet.words, i.words)
+	return copySet
+}
