@@ -64,9 +64,11 @@ func (lr *limitReader) Read(p []byte) (int, error) {
 	var err error
 	if int64(len(p)) > lr.n {
 		p = p[:lr.n]
-		err = io.EOF
 	}
 	n, err := lr.r.Read(p)
+	if int64(n) == lr.n {
+		err = io.EOF
+	}
 	lr.n -= int64(n)
 	return n, err
 }
@@ -76,17 +78,17 @@ func LimitReader(r io.Reader, n int64) io.Reader {
 }
 
 func limitReaderTest() {
-	testStr := "1234556"
+	testStr := "123456"
 	lr := LimitReader(strings.NewReader(testStr), 3)
 	lr100 := LimitReader(strings.NewReader(testStr), 100)
-	result := make([]byte, 3)
+	result := make([]byte, 100)
 	result100 := make([]byte, 100)
 	n, err := lr.Read(result)
 	n100, err100 := lr100.Read(result100)
-	fmt.Printf("3 ?= %d", n)
-	fmt.Printf("100 ?= %d", n100)
-	fmt.Printf("nil ?= %s", err100)
-	fmt.Printf("EOF ?= %d", err)
+	fmt.Printf("3 ?= %d\n", n)
+	fmt.Printf("6 ?= %d\n", n100)
+	fmt.Printf("nil ?= %v\n", err100)
+	fmt.Printf("EOF ?= %v\n", err)
 
 }
 
